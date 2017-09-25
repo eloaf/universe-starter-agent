@@ -14,8 +14,11 @@ RUN pip3 install numpy scipy
 RUN pip3 install gym==0.7.4 "gym[atari]" universe six tensorflow go_vncdriver opencv-python 
 RUN pip3 install pygame
 
-RUN ls
+# TODO Replace by copy
 RUN git clone https://github.com/eloaf/universe-starter-agent.git
+
+RUN apt-get install -y vim
+RUN apt-get install -y lsof
 
 RUN git clone https://github.com/eloaf/PyGame-Learning-Environment.git
 RUN cd PyGame-Learning-Environment; pip3 install  -e .; cd ..
@@ -23,8 +26,7 @@ RUN cd PyGame-Learning-Environment; pip3 install  -e .; cd ..
 RUN git clone https://github.com/lusob/gym-ple.git
 RUN cd gym-ple/; pip3 install -e .; cd ..
 
-RUN apt-get install -y vim
-RUN apt-get install -y lsof
+# /docker-entrypoint-startup.d
 
 RUN echo 'python3 train.py --num-workers 2 --env-id WaterWorld-v0 --log-dir /tmp/pong' > /universe-starter-agent/run_water.sh
 RUN chmod a+rwx /universe-starter-agent/run_water.sh
