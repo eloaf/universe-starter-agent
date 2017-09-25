@@ -1,48 +1,34 @@
 FROM ubuntu
 
+RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates libglib2.0-0 libxext6 libsm6 libxrender1 git mercurial subversion apt-utils
+RUN apt-get install -y zlib1g-dev cmake tmux htop cmake golang libjpeg-dev libpng12-dev libjpeg8-dev libtiff5-dev libjasper-dev libpng12-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev libgtk-3-dev libatlas-base-dev gfortran libgtk2.0-dev
+RUN apt-get install -y python3=3.5.1*
+RUN apt-get install -y python3-pip
 
-RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
-    libglib2.0-0 libxext6 libsm6 libxrender1 \
-    git mercurial subversion
+#ENV PATH /opt/conda/bin:$PATH
 
-RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda2-4.3.14-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh
+#ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get install -y zlib1g-dev cmake
-RUN apt-get install -y tmux htop cmake golang libjpeg-dev libpng12-dev
-RUN apt-get install -y libjpeg8-dev libtiff5-dev libjasper-dev libpng12-dev
-RUN apt-get install -y libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
-RUN apt-get install -y libxvidcore-dev libx264-dev
-RUN apt-get install -y libgtk-3-dev
-RUN apt-get install -y libatlas-base-dev gfortran
-RUN apt-get install -y libgtk2.0-dev
+RUN pip3 install --upgrade pip
+RUN pip3 install numpy scipy
+RUN pip3 install gym==0.7.4 "gym[atari]" universe six tensorflow go_vncdriver opencv-python 
+RUN pip3 install pygame
 
-ENV PATH /opt/conda/bin:$PATH
+RUN ls
+RUN git clone https://github.com/eloaf/universe-starter-agent.git
 
-RUN conda create --name universe-starter-agent python=3.5
-RUN echo "source activate universe-starter-agent" >> ~/.bashrc
-RUN /bin/bash -c "source activate universe-starter-agent"
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install numpy
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install scipy
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install "gym[atari]"
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install universe
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install six
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install tensorflow
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install go_vncdriver
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install opencv-python
-#RUN conda install -n universe-starter-agent -y -c http://conda.binstar.org/menpo opencv3
-
-RUN git clone https://github.com/openai/universe-starter-agent.git
-
-RUN /opt/conda/envs/universe-starter-agent/bin/pip install pygame
-
-RUN git clone https://github.com/ntasfi/PyGame-Learning-Environment.git
-RUN cd PyGame-Learning-Environment; /opt/conda/envs/universe-starter-agent/bin/pip install -e .; cd ..
+RUN git clone https://github.com/eloaf/PyGame-Learning-Environment.git
+RUN cd PyGame-Learning-Environment; pip3 install  -e .; cd ..
 
 RUN git clone https://github.com/lusob/gym-ple.git
-RUN cd gym-ple/; /opt/conda/envs/universe-starter-agent/bin/pip install -e .; cd ..
+RUN cd gym-ple/; pip3 install -e .; cd ..
 
+RUN apt-get install -y vim
+RUN apt-get install -y lsof
+
+RUN echo 'python3 train.py --num-workers 2 --env-id WaterWorld-v0 --log-dir /tmp/pong' > /universe-starter-agent/run_water.sh
+RUN chmod a+rwx /universe-starter-agent/run_water.sh
+
+WORKDIR /universe-starter-agent
 RUN /bin/bash
 # RUN source activate universe-starter-agent
