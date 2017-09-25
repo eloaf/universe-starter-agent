@@ -2,6 +2,7 @@ import cv2
 from gym.spaces.box import Box
 import numpy as np
 import gym
+import gym_ple
 from gym import spaces
 import logging
 import universe
@@ -73,7 +74,8 @@ def create_vncatari_env(env_id, client_id, remotes, **_):
 def create_atari_env(env_id):
     env = gym.make(env_id)
     env = Vectorize(env)
-    env = AtariRescale42x42(env)
+    #env = AtariRescale42x42(env)
+    env = AtariNormalizeInput(env)
     env = DiagnosticsInfo(env)
     env = Unvectorize(env)
     return env
@@ -185,6 +187,14 @@ class AtariRescale42x42(vectorized.ObservationWrapper):
 
     def _observation(self, observation_n):
         return [_process_frame42(observation) for observation in observation_n]
+
+class AtariNormalizeInput(vectorized.ObservationWrapper):
+    def __init__(self, env=None):
+        super(AtariNormalizeInput, self).__init__(env)
+        self.observation_space = Box(0., 1., [42, 42, 3])
+
+    def _observation(self, observation_n):
+        return [o / 255. for o in observation_n]
 
 class FixedKeyState(object):
     def __init__(self, keys):
