@@ -1,3 +1,5 @@
+# TODO use phil's image : FROM: images.borgy.elementai.lan/tensorflow-cpu-opt:latest-devel-py3
+# That image has tensorflow compiled with cpu optimization for the cluster. allac says it has up to 50% speedup!
 FROM ubuntu
 
 # Basics, needed for all the packages to be installed
@@ -28,12 +30,6 @@ RUN pip3 install "gym[atari]"
 RUN pip3 install universe
 RUN pip3 install go_vncdriver
 
-
-
-# TODO Replace by copy
-RUN git clone https://github.com/eloaf/universe-starter-agent.git
-#RUN mkdir /universe-starter-agent
-
 # PLE : Dont forget to update branch version if you update the PLE fork!
 RUN git clone https://github.com/eloaf/PyGame-Learning-Environment.git --branch v1.1
 RUN cd PyGame-Learning-Environment; pip3 install  -e .; cd ..
@@ -42,11 +38,7 @@ RUN cd PyGame-Learning-Environment; pip3 install  -e .; cd ..
 RUN git clone https://github.com/lusob/gym-ple.git
 RUN cd gym-ple/; pip3 install -e .; cd ..
 
-# /docker-entrypoint-startup.d
+# TODO Replace by copy or just use /mnt/AIDATA/home/<user>/... which is automatically mounted by borgy
+# RUN git clone https://github.com/eloaf/universe-starter-agent.git
 
-RUN echo 'python3 train.py --num-workers 2 --env-id WaterWorld-v0 --log-dir /tmp/pong' > /universe-starter-agent/run_water.sh
-RUN chmod a+rwx /universe-starter-agent/run_water.sh
-
-WORKDIR /universe-starter-agent
-# RUN /bin/bash
-# RUN source activate universe-starter-agent
+WORKDIR /home/elaufer/code/universe-starter-agent
