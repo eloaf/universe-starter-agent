@@ -210,7 +210,6 @@ class A3C(object):
             # smaller than 20 makes the algorithm more difficult to tune and to get to work.
             self.runner = RunnerThread(env, pi, 20, visualise)
 
-
             grads = tf.gradients(self.loss, pi.var_list)
 
             if use_tf12_api:
@@ -240,7 +239,7 @@ class A3C(object):
             inc_step = self.global_step.assign_add(tf.shape(pi.x)[0])
 
             # each worker has a different set of adam optimizer parameters
-            opt = tf.train.AdamOptimizer(1e-4)
+            opt = tf.train.AdamOptimizer(1e-5)
             #opt = tf.train.RMSPropOptimizer(learning_rate=1e-4)
             self.train_op = tf.group(opt.apply_gradients(grads_and_vars), inc_step)
             self.summary_writer = None
